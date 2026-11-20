@@ -1,0 +1,12 @@
+services:
+  canary:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - canary-data:/data
+    environment:
+      - CANARY_LOG=/data/canary_events.jsonl
+
+volumes:
+  canary-data:

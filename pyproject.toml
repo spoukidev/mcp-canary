@@ -1,0 +1,23 @@
+[project]
+name = "mcp-canary"
+version = "0.1.0"
+description = "Attractive MCP honeypot and canary tool server for detecting agent misuse"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio"]
+
+[project.scripts]
+mcp-canary = "mcp_canary.server:main"
+mcp-canary-analyze = "mcp_canary.analyze:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
