@@ -9,10 +9,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-try:
-    from mcp.server.fastmcp import FastMCP
-except ImportError:  # older / newer SDK layouts
-    from mcp.server import FastMCP  # type: ignore
+from mcp.server.fastmcp import FastMCP  # mcp 1.x; pinned <2 in pyproject.toml
 
 LOG_PATH = Path(os.environ.get("CANARY_LOG", "canary_events.jsonl"))
 SESSION = os.environ.get("CANARY_SESSION", str(uuid.uuid4())[:8])
