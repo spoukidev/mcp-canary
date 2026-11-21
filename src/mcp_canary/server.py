@@ -162,6 +162,24 @@ def canary_report(token: str, note: str = "") -> str:
     return f"[canary:{canary}] Recorded token {token}"
 
 
+_LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
+
+
+def configure_http(host: str, port: int) -> None:
+    """Apply --host/--port to the FastMCP settings used by the HTTP transports.
+
+    FastMCP.run() only accepts the transport name; host and port live on
+    ``mcp.settings``. FastMCP also enables a localhost-only Host-header
+    allow-list when it is constructed for a loopback host (the default), so
+    binding elsewhere must drop it, exactly as ``FastMCP(host=...)`` would,
+    or remote agents would be rejected with 421 Invalid Host header.
+    """
+    mcp.settings.host = host
+    mcp.settings.port = port
+    if host not in _LOOPBACK_HOSTS:
+        mcp.settings.transport_security = None
+
+
 def main() -> None:
     import argparse
 
@@ -171,10 +189,9 @@ def main() -> None:
     parser.add_argument("--host", default="0.0.0.0")
     args = parser.parse_args()
 
-    if args.transport == "stdio":
-        mcp.run()
-    else:
-        mcp.run(transport=args.transport, host=args.host, port=args.port)
+    if args.transport != "stdio":
+        configure_http(args.host, args.port)
+    mcp.run(transport=args.transport)
 
 
 if __name__ == "__main__":
