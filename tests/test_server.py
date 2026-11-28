@@ -91,3 +91,16 @@ def test_analyze_groups_sessions_and_skips_bad_lines(tmp_path, monkeypatch, caps
     analyze.main()
     out = capsys.readouterr().out
     assert "Session s1 — 2 events — max severity: critical" in out
+
+
+def test_analyze_skips_json_lines_that_are_not_event_objects(tmp_path, monkeypatch, capsys):
+    path = tmp_path / "events.jsonl"
+    path.write_text(
+        '["not", "an", "event"]\n"just a string"\n42\nnull\n'
+        + json.dumps({"session": ["odd"], "tool": "get_secrets", "severity": "critical", "flags": []})
+        + "\n"
+    )
+    monkeypatch.setattr(sys, "argv", ["mcp-canary-analyze", str(path)])
+    analyze.main()
+    out = capsys.readouterr().out
+    assert "1 events — max severity: critical" in out

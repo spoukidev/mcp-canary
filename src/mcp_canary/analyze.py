@@ -20,9 +20,11 @@ def main() -> None:
             continue
         try:
             ev = json.loads(line)
-            sessions[ev.get("session", "unknown")].append(ev)
         except json.JSONDecodeError:
             continue
+        if not isinstance(ev, dict):  # valid JSON but not an event object (e.g. a stray list or string)
+            continue
+        sessions[str(ev.get("session", "unknown"))].append(ev)
 
     for sid, events in sessions.items():
         severities = [e.get("severity", "info") for e in events]
